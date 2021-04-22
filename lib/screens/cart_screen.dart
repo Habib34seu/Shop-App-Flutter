@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart.dart' show Cart;
 import '../widgets/cart_item.dart';
+import '../providers/orders.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -25,34 +26,43 @@ class CartScreen extends StatelessWidget {
                     'Total',
                     style: TextStyle(fontSize: 20),
                   ),
-                 Spacer(),
+                  Spacer(),
                   Chip(
-                    label: Text('\$${cart.totalAmount}',
-                    style: TextStyle(
-                      color: Theme.of(context).primaryTextTheme.title.color,
-                    ),
+                    label: Text(
+                      '\$${cart.totalAmount.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryTextTheme.title.color,
+                      ),
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   FlatButton(
-                    onPressed: (){}, 
+                    onPressed: () {
+                      Provider.of<Orders>(context, listen: false).addOrder(
+                        cart.items.values.toList(),
+                        cart.totalAmount,
+                      );
+                      cart.clear();
+                    },
                     child: Text('Order Now'),
                     textColor: Theme.of(context).primaryColor,
-                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: cart.items.length,
-              itemBuilder: (ctz,i)=>CartItem(
-                cart.items.values.toList()[i].id, 
-                 cart.items.keys.toList()[i],
+              itemBuilder: (ctz, i) => CartItem(
+                cart.items.values.toList()[i].id,
+                cart.items.keys.toList()[i],
                 cart.items.values.toList()[i].title,
-                cart.items.values.toList()[i].price,  
-                cart.items.values.toList()[i].quantity,  
+                cart.items.values.toList()[i].price,
+                cart.items.values.toList()[i].quantity,
               ),
             ),
           ),
